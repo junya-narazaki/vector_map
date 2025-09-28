@@ -155,13 +155,10 @@ def main():
     y_col = get_col("主応力Y列名", "y_position", df_stress)
     sigma_col = get_col("主応力の大きさ列名", "sigma1", df_stress)
     theta_col = get_col("主応力の角度(度)列名", "theta_p_deg_app", df_stress)
-    bg_x_col = get_col("背景X列名", "x_position", df_bg)
-    bg_y_col = get_col("背景Y列名", "y_position", df_bg)
-    bg_col   = get_col("背景ラスター列名（例: CI）", "GRed_ER_EBSD_σ11", df_bg)
     if df_excel == 1:
         bg_x_col = x_col
         bg_y_col = y_col
-        bg_col   = get_col("背景ラスター列名（例: CI）", "sigma1", df_stress)
+        bg_col   = get_col("背景ラスター列名（例: sigma1）", "sigma1", df_stress)
     else:
         bg_x_col = get_col("背景X列名", "x_position", df_bg)
         bg_y_col = get_col("背景Y列名", "y_position", df_bg)
@@ -199,4 +196,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
