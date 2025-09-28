@@ -23,9 +23,6 @@ def draw_overlay(x, y, sigma, theta, bg_x, bg_y, bg, grp,
         print(f"観測値範囲: min={obs_min}, max={obs_max}")
         smin_in = input(f"表示最小値を入力（Enterで {obs_min}）: ").strip()
         smax_in = input(f"表示最大値を入力（Enterで {obs_max}）: ").strip()
-        #
-        #smax_in = 1.5
-        #
         smin = float(smin_in) if smin_in else obs_min
         smax = float(smax_in) if smax_in else obs_max
         if smax <= smin:
@@ -43,10 +40,6 @@ def draw_overlay(x, y, sigma, theta, bg_x, bg_y, bg, grp,
         print(f"観測値範囲: min={obs_min_bg}, max={obs_max_bg}")
         back_min = input(f"最小値 vmin を入力（Enterで {obs_min_bg}）: ").strip()
         back_max = input(f"最大値 vmax を入力（Enterで {obs_max_bg}）: ").strip()
-        #
-        #back_min = -1
-        #back_max = 3
-        #
         back_min = float(back_min) if back_min else obs_min_bg
         back_max = float(back_max) if back_max else obs_max_bg
 
@@ -89,13 +82,8 @@ def draw_overlay(x, y, sigma, theta, bg_x, bg_y, bg, grp,
         for xx_i, yb, yt in zip(xx, yyB, yyT):
             ax.plot([xx_i, xx_i], [yb, yt], color="black", linewidth=0.8)
 
-        # 両矢印ベクトル
+        # ベクトル表示
         
-        #ux = half_len * np.cos(theta)
-        #uy = half_len * np.sin(theta)
-        #for xi, yi, uxi, uyi in zip(x, y, ux, uy):
-        #    ax.plot([xi - uxi, xi + uxi], [yi - uyi, yi + uyi],
-        #            color="black", linewidth=1.2)
         #plt.show()
         ux = half_len * np.cos(theta)
         uy = half_len * np.sin(theta)
@@ -106,42 +94,6 @@ def draw_overlay(x, y, sigma, theta, bg_x, bg_y, bg, grp,
                     color="black", linewidth=1.2)
         ax.invert_yaxis()
         plt.show()
-        
-        
-        '''
-        ux = half_len * np.cos(theta)
-        uy = half_len * np.sin(theta)
-        for xi, yi, uxi, uyi in zip(x, y, ux, uy):
-            arrow = FancyArrowPatch(
-                (xi - uxi, yi - uyi),
-                (xi + uxi, yi + uyi),
-                arrowstyle='<->',
-                mutation_scale=10,
-                color='black',
-                linewidth=1.2
-            )
-            ax.add_patch(arrow)
-        '''
-        '''
-        ##ここからが試作
-        ux = half_len * np.cos(theta)
-        uy = half_len * np.sin(theta)
-        for xi, yi, uxi, uyi, val in zip(x, y, ux, uy, sigma):
-            if val == 0:
-                continue  # 値0はスキップ
-
-        arrow_style = '<->' if val > 0 else '-'
-        arrow = FancyArrowPatch(
-            (xi - uxi, yi - uyi),
-            (xi + uxi, yi + uyi),
-            arrowstyle=arrow_style,
-            mutation_scale=10,
-            color='black',
-            linewidth=1.2
-        )
-        ax.add_patch(arrow)
-        ##
-'''
 
         ax.set_aspect("equal")
         ax.set_title(f"Overlay: Stress={sigma_col}, Background={bg_col}")
@@ -151,7 +103,6 @@ def draw_overlay(x, y, sigma, theta, bg_x, bg_y, bg, grp,
         out_dir.mkdir(exist_ok=True)
         fname = sanitize_filename(f"{sheet_index}th_{bg_col}_overlay_{smin}_to_{smax}.png")
         save_path = out_dir / fname
-        #plt.savefig(save_path, dpi=300, bbox_inches="tight")
         fig.savefig(save_path, dpi=300, bbox_inches="tight")
         print(f"保存しました: {save_path}")
 
@@ -204,22 +155,9 @@ def main():
     y_col = get_col("主応力Y列名", "y_position", df_stress)
     sigma_col = get_col("主応力の大きさ列名", "sigma1", df_stress)
     theta_col = get_col("主応力の角度(度)列名", "theta_p_deg_app", df_stress)
-
-    #bg_x_col = get_col("背景X列名", "x_position", df_bg)
-    #bg_y_col = get_col("背景Y列名", "y_position", df_bg)
-    #bg_col   = get_col("背景ラスター列名（例: CI）", "GRed_ER_EBSD_σ11", df_bg)
-
-    #とりあえず0903に使用
-    '''
-    x_col = "X_pixel_"
-    y_col = "Y_pixel_"
-    sigma_col = "sigma1"
-    theta_col = "theta_p_deg_app"
-
-    bg_x_col = "X_pixel_"
-    bg_y_col = "Y_pixel_"
-    bg_col   = "sigma1"
-    '''
+    bg_x_col = get_col("背景X列名", "x_position", df_bg)
+    bg_y_col = get_col("背景Y列名", "y_position", df_bg)
+    bg_col   = get_col("背景ラスター列名（例: CI）", "GRed_ER_EBSD_σ11", df_bg)
     if df_excel == 1:
         bg_x_col = x_col
         bg_y_col = y_col
@@ -229,8 +167,7 @@ def main():
         bg_y_col = get_col("背景Y列名", "y_position", df_bg)
         bg_col   = get_col("背景ラスター列名（例: CI）", "GRed_ER_EBSD_σ11", df_bg)
     
-    grp_col  = get_col("境界抽出用グループ列名（例: grain_id）", "c0thEBSDmap_PointTo_Resample2", df_bg)
-    #grp_col = "GN_Resample"
+    grp_col  = get_col("境界抽出用グループ列名（例: grain_id）", "GN_Resample", df_bg)
 
     # --- データ取得 ---
     x = df_stress[x_col].to_numpy()
@@ -262,3 +199,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
